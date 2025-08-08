@@ -36,6 +36,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const apiBase = useMemo(() => import.meta.env.VITE_API_BASE || 'http://localhost:3000', []);
   const [backendOk, setBackendOk] = useState(true);
+  const [showToast, setShowToast] = useState(false);
 
   // Zustand store for form state
   const { transcript, role, candidateName, candidateEmail, setTranscript, setRole, setCandidateName, setCandidateEmail, reset } = useInterviewStore();
@@ -96,6 +97,11 @@ export default function App() {
       await refreshList();
       setSelectedId(res.id);
       reset();
+      // Mock Slack send after 2 seconds
+      setTimeout(() => {
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      }, 2000);
     } catch (err: any) {
       setError(err?.message || 'Failed');
     } finally {
@@ -218,6 +224,7 @@ export default function App() {
           </div>
         </div>
       </div>
+      {showToast && <div className="toast">Sending summary to Slack…</div>}
     </div>
   );
 }
