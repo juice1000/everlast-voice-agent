@@ -48,19 +48,6 @@ export default function App() {
     console.log('[Transcript updated]', { at: new Date().toISOString(), length: transcript.length, preview });
   }, [transcript]);
 
-  // Prefill dummy data once on first mount if transcript empty
-  useEffect(() => {
-    if (!transcript) {
-      setTranscript(
-        'Ich habe ein Team von 4 Entwickler:innen geleitet und eine skalierbare Architektur in TypeScript/Node entworfen. Wir haben Testing priorisiert und gemeinsam Engpässe debuggt. Ich arbeite sehr gerne im Team, gebe Feedback und übernehme Ownership. Die Mission des Unternehmens motiviert mich.'
-      );
-      setCandidateName('Max Mustermann');
-      setCandidateEmail('max@example.com');
-      setRole('Software Engineer');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   async function refreshList() {
     try {
       const res = await listReports();
@@ -141,7 +128,6 @@ export default function App() {
             )}
             {error && <div style={{ color: 'salmon', marginTop: 8 }}>{error}</div>}
             {!backendOk && <div style={{ color: 'salmon', marginTop: 8 }}>Backend not reachable at {apiBase}. Start the server or update VITE_API_BASE.</div>}
-            <div className="footer-note">Tip: The form is prefilled with dummy data. Edit and press Evaluate to create your first report.</div>
           </form>
         </div>
       </div>

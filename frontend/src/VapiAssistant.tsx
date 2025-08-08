@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Vapi from '@vapi-ai/web';
 import { useInterviewStore } from './store';
 
@@ -13,6 +13,7 @@ const VapiWidget: React.FC<VapiWidgetProps> = ({ apiKey, assistantId, config = {
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState<Array<{ role: string; text: string }>>([]);
+  const transcriptRef = useRef<Array<{ role: string; text: string }>>([]);
   const { setTranscript: setGlobalTranscript } = useInterviewStore();
 
   useEffect(() => {
@@ -23,14 +24,19 @@ const VapiWidget: React.FC<VapiWidgetProps> = ({ apiKey, assistantId, config = {
     vapiInstance.on('call-start', () => {
       console.log('Call started');
       setIsConnected(true);
+      // Flush state at the beginning of every call
+      setTranscript([]);
+      transcriptRef.current = [];
+      setGlobalTranscript('');
     });
 
     vapiInstance.on('call-end', () => {
       console.log('Call ended');
       setIsConnected(false);
       setIsSpeaking(false);
-      const combined = transcript.map((m) => `${m.role}: ${m.text}`).join('\n');
+      const combined = transcriptRef.current.map((m) => `${m.role}: ${m.text}`).join('\n');
       console.log('Final transcript:', combined);
+      // Keep the final transcript after the call ends
       setGlobalTranscript(combined);
     });
 
@@ -54,6 +60,7 @@ const VapiWidget: React.FC<VapiWidgetProps> = ({ apiKey, assistantId, config = {
               text: message.transcript,
             },
           ];
+          transcriptRef.current = next;
           const combined = next.map((m) => `${m.role}: ${m.text}`).join('\n');
           setGlobalTranscript(combined);
           const preview = combined.length > 200 ? `${combined.slice(0, 200)}…` : combined;

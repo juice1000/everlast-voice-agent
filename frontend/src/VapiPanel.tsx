@@ -8,7 +8,6 @@ export default function VapiPanel() {
   if (apiKey && assistantId) {
     return (
       <div>
-        <div className="panel-title">Voice Agent</div>
         <VapiWidget apiKey={apiKey} assistantId={assistantId} />
       </div>
     );

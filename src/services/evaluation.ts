@@ -100,7 +100,15 @@ export async function evaluateTranscriptLLM(input: EvaluationInput): Promise<Eva
 
   const jobProfile = getJobProfile();
 
-  const system = `You are a professional technical interviewer assistant. Produce a fair, evidence-based evaluation report for HR. If information is missing, infer conservatively and note uncertainties.`;
+  const system = `You are a rigorous technical interviewer assistant.
+- The transcript is a sequence of turns with keys or prefixes "assistant" and "user".
+- Treat "assistant" as the interviewer (questions/prompts) and "user" as the interviewee/candidate (answers).
+- Evaluate the candidate based primarily on the "user" turns; use "assistant" only for context.
+- Be critical and conservative in scoring and decision; do not inflate scores.
+- Prefer concrete evidence (specifics, numbers, examples) over generalities. Penalize vagueness or hand-wavy claims.
+- If information is missing or uncertain, infer conservatively and explicitly note uncertainties.
+- Keep the language professional and HR-ready.`;
+
   const user = {
     role: input.role || 'Unknown Role',
     candidateName: input.candidate?.name || 'Unknown Candidate',
@@ -112,7 +120,17 @@ export async function evaluateTranscriptLLM(input: EvaluationInput): Promise<Eva
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: system },
-      { role: 'user', content: `Return ONLY valid JSON for the following evaluation schema:\n${JSON.stringify(schema)}\nInput:\n${JSON.stringify(user)}` },
+      {
+        role: 'user',
+        content:
+          `Return ONLY valid JSON for the following evaluation schema:\n${JSON.stringify(schema)}\n\n` +
+          `Transcript format guidance:\n` +
+          `- assistant: interviewer (questions/prompts)\n` +
+          `- user: interviewee/candidate (answers)\n` +
+          `Evaluate the candidate using only 'user' turns as evidence; use 'assistant' turns for context.\n` +
+          `Be critical and conservative in all scores and the final decision.\n\n` +
+          `Input:\n${JSON.stringify(user)}`,
+      },
     ],
     response_format: { type: 'json_object' },
     temperature: 0.2,
