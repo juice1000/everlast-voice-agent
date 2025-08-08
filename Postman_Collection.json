@@ -1,0 +1,84 @@
+{
+  "info": { "name": "Everlast Voice Agent", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "item": [
+    {
+      "name": "GET Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "http://localhost:3000/health", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["health"] }
+      }
+    },
+    {
+      "name": "GET Root",
+      "request": { "method": "GET", "header": [], "url": { "raw": "http://localhost:3000/", "protocol": "http", "host": ["localhost"], "port": "3000", "path": [""] } }
+    },
+    {
+      "name": "POST Evaluate",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const json = pm.response.json();",
+              "  if (json && json.id) { pm.collectionVariables.set('last_id', json.id); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transcript\": \"I led a team and designed architecture in Typescript and Node, focused on scalability and testing. I mentor and collaborate. I am excited about the mission and impact.\",\n  \"role\": \"Software Engineer\",\n  \"candidate\": { \"name\": \"Max Mustermann\" }\n}"
+        },
+        "url": { "raw": "http://localhost:3000/evaluate", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["evaluate"] }
+      }
+    },
+    {
+      "name": "POST Simulate",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transcript\": \"Hallo, ich habe Erfahrung mit TypeScript, Node und Systemarchitektur. Ich arbeite gerne im Team und lege Wert auf Skalierbarkeit und Testing.\",\n  \"role\": \"Software Engineer\",\n  \"candidate\": { \"name\": \"Anna Schmidt\" }\n}"
+        },
+        "url": { "raw": "http://localhost:3000/simulate", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["simulate"] }
+      }
+    },
+    {
+      "name": "POST Vapi Webhook (Sample)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transcript\": \"Hallo, ich habe Erfahrung mit TypeScript, Node und Systemarchitektur. Ich arbeite gerne im Team und lege Wert auf Skalierbarkeit und Testing.\",\n  \"role\": \"Software Engineer\",\n  \"candidate\": { \"name\": \"Anna Schmidt\" }\n}"
+        },
+        "url": { "raw": "http://localhost:3000/webhooks/vapi", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["webhooks", "vapi"] }
+      }
+    },
+    {
+      "name": "GET Reports",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "http://localhost:3000/reports", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["reports"] }
+      }
+    },
+    {
+      "name": "GET Report by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "http://localhost:3000/reports/{{last_id}}", "protocol": "http", "host": ["localhost"], "port": "3000", "path": ["reports", "{{last_id}}"] }
+      }
+    }
+  ],
+  "variable": [{ "key": "last_id", "value": "" }]
+}
